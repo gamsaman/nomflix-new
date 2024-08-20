@@ -1,15 +1,37 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
+import { createGlobalStyle, ThemeProvider } from "styled-components";
+import reset from "styled-reset";
+import { theme } from "./theme";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./Router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const client = new QueryClient();
+
+const GlobalStyle = createGlobalStyle`
+  ${reset}
+  body * {
+    box-sizing: border-box;
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 400;
+    color: ${(props) => props.theme.white.lighter}
+  }
+`;
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={client}>
+      <ThemeProvider theme={theme}>
+        <GlobalStyle />
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
 
