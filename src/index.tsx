@@ -13,11 +13,14 @@ const client = new QueryClient();
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
+  body {
+    background-color: ${(props) => props.theme.black.veryDark};
+  }
   body * {
     box-sizing: border-box;
     font-family: "Noto Sans", sans-serif;
     font-weight: 400;
-    color: ${(props) => props.theme.white.lighter}
+    color: ${(props) => props.theme.white.lighter};
   }
 `;
 
