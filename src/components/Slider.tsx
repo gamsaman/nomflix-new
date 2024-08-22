@@ -1,9 +1,10 @@
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { IMovie } from "../api";
 import { useNavigate } from "react-router-dom";
 import { makeImagePath } from "../utils";
+import { GoChevronLeft, GoChevronRight } from "react-icons/go";
 
 const SliderWrapper = styled.div`
   padding-left: 60px;
@@ -26,22 +27,29 @@ const Row = styled(motion.div)`
   gap: 5px;
 `;
 const Card = styled(motion.div)`
+  > div:first-child {
+    transform-origin: center center;
+  }
   &:first-child {
-    transform-origin: center left;
+    > div:first-child {
+      transform-origin: center left;
+    }
   }
   &:last-child {
-    transform-origin: center right;
+    > div:first-child {
+      transform-origin: center right;
+    }
   }
 `;
-const Thumbnail = styled(motion.div)<{ bgPhoto: string }>`
+const Thumbnail = styled(motion.div)<{ photo: string }>`
   height: 200px;
   background-color: white;
-  background-image: url(${(props) => props.bgPhoto});
+  background-image: url(${(props) => props.photo});
   background-size: cover;
   background-positon: center center;
-  &:first-child {
-    transform-origin: center left;
-  }
+  position: relative;
+  border-radius: 5px;
+  cursor: pointer;
 `;
 const Info = styled(motion.div)`
   padding: 10px;
@@ -49,6 +57,11 @@ const Info = styled(motion.div)`
   text-align: center;
   font-size: 15px;
   opacity: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  border-radius: 0 0 5px 5px;
 `;
 
 const rowVariants = {
@@ -69,6 +82,7 @@ const cardVariants = {
   hover: {
     scale: 1.3,
     y: -50,
+    zIndex: 100,
     transition: {
       delay: 0.3,
       type: "tween",
@@ -98,10 +112,18 @@ function Slider({
   const navigate = useNavigate();
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
+  const listLength = useRef(results.length - 1);
+  const maxIndex = useRef(Math.floor(listLength.current / offset) - 1);
   const toggleLeaving = () => setLeaving((prev) => !prev);
   const onCardClick = (movieId: number) => {
     navigate(`/${movieId}`);
   };
+  const onRightClick = () => {
+    if (leaving) return;
+    toggleLeaving();
+    setIndex(index === maxIndex.current ? 0 : (prev) => prev + 1);
+  };
+  results.forEach((movie) => console.log(movie.id, movie.title));
 
   return (
     <SliderWrapper className={className}>
@@ -119,25 +141,30 @@ function Slider({
           {results
             .slice(1)
             .slice(offset * index, offset * index + offset)
-            .map((movie: IMovie) => (
+            .map((movie: IMovie, i) => (
               <Card
+                key={movie.id}
                 layoutId={movie.id + ""}
                 onClick={() => onCardClick(movie.id)}
-                whileHover="hover"
-                initial="normal"
-                variants={cardVariants}
-                transition={{ type: "tween" }}
               >
                 <Thumbnail
-                  key={movie.id}
-                  bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
-                />
-                <Info variants={infoVariants}>
-                  <h4>{movie.title}</h4>
-                </Info>
+                  photo={makeImagePath(movie.backdrop_path, "w500")}
+                  whileHover="hover"
+                  initial="normal"
+                  variants={cardVariants}
+                  transition={{ type: "tween" }}
+                >
+                  <Info variants={infoVariants}>
+                    <h4>{movie.title}</h4>
+                  </Info>
+                </Thumbnail>
               </Card>
             ))}
         </Row>
+        <>
+          <GoChevronLeft size={32} />
+          <GoChevronRight size={32} onClick={onRightClick} />
+        </>
       </AnimatePresence>
     </SliderWrapper>
   );

@@ -19,14 +19,14 @@ const CoverWrapper = styled.div`
   height: 100vh;
   overflow-x: hidden;
 `;
-const MainCover = styled.div<{ bgPhoto: string }>`
+const MainCover = styled.div<{ photo: string }>`
   padding: 68px 60px 60px 60px;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background-image: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 1)),
-    url(${(props) => props.bgPhoto});
+    url(${(props) => props.photo});
   background-size: cover;
 `;
 const Title = styled.h2`
@@ -81,7 +81,7 @@ function Home() {
         <>
           <CoverWrapper>
             <MainCover
-              bgPhoto={makeImagePath(
+              photo={makeImagePath(
                 nowPlayingMovies?.data.results[0].backdrop_path || ""
               )}
             >
@@ -91,7 +91,7 @@ function Home() {
             <Slider
               results={nowPlayingMovies?.data.results}
               className="first-slide"
-              title="현재 상영중인 영화"
+              title="Now Playing"
             />
           </CoverWrapper>
           <AnimatePresence>
