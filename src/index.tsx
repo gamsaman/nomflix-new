@@ -21,6 +21,10 @@ const GlobalStyle = createGlobalStyle`
     font-family: "Noto Sans", sans-serif;
     font-weight: 400;
     color: ${(props) => props.theme.white.lighter};
+    font-size: 16px;
+  }
+  button {
+    cursor: pointer;
   }
 `;
 

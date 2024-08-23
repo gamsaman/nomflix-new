@@ -24,6 +24,7 @@ const Nav = styled(motion.nav)`
     transparent
   );
   transition: all 0.5s;
+  z-index: 100;
 `;
 const Logo = styled(motion.svg)`
   margin-right: 50px;

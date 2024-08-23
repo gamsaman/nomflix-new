@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { makeImagePath } from "../utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
-import Slider from "../components/Slider";
+import MultipleItems from "../components/MultipleItems/MultipleItems";
 
 const Loader = styled.div`
   background-color: ${(props) => props.theme.black.darker};
@@ -18,6 +18,7 @@ const Loader = styled.div`
 const CoverWrapper = styled.div`
   height: 100vh;
   overflow-x: hidden;
+  position: relative;
 `;
 const MainCover = styled.div<{ photo: string }>`
   padding: 68px 60px 60px 60px;
@@ -63,16 +64,10 @@ function Home() {
     queryKey: ["movies", "nowPlaying"],
     queryFn: getMovies,
   });
-  // const increaseIndex = () => {
-  //   if (leaving) return;
-  //   toggleLeaving();
-  //   const totalMovies = data?.data.results.length - 1;
-  //   const maxIndex = Math.floor(totalMovies / offset) - 1;
-  //   setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
-  // };
   const modalMatch = useMatch("/:movieId");
   const navigate = useNavigate();
   const onModalBgClick = () => navigate(-1);
+
   return (
     <>
       {isLoading ? (
@@ -88,20 +83,20 @@ function Home() {
               <Title>{nowPlayingMovies?.data.results[0].title}</Title>
               <Overview>{nowPlayingMovies?.data.results[0].overview}</Overview>
             </MainCover>
-            <Slider
-              results={nowPlayingMovies?.data.results}
-              className="first-slide"
-              title="Now Playing"
+            <MultipleItems
+              heading="현재 상영중인 영화"
+              className="first"
+              results={nowPlayingMovies?.data.results.slice(1)}
             />
           </CoverWrapper>
-          <AnimatePresence>
+          {/* <AnimatePresence>
             {modalMatch && (
               <>
                 <ModalBg animate={{ opacity: 1 }} onClick={onModalBgClick} />
                 <Modal layoutId={modalMatch.params.movieId} />
               </>
             )}
-          </AnimatePresence>
+          </AnimatePresence> */}
         </>
       )}
     </>
