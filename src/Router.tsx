@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
         element: <Search />,
       },
       {
-        path: ":movieId",
+        path: "movies/:movieId",
         element: <Home />,
       },
     ],

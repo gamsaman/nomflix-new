@@ -2,9 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getMovies } from "../api";
 import styled from "styled-components";
 import { makeImagePath } from "../utils";
-import { motion, AnimatePresence } from "framer-motion";
-import { useMatch, useNavigate } from "react-router-dom";
 import MultipleItems from "../components/MultipleItems/MultipleItems";
+import Modal from "../components/Modal";
 
 const Loader = styled.div`
   background-color: ${(props) => props.theme.black.darker};
@@ -40,33 +39,12 @@ const Overview = styled.p`
   margin-top: 15px;
   width: 40%;
 `;
-const ModalBg = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-`;
-const Modal = styled(motion.div)`
-  width: 40vw;
-  height: 60vh;
-  background-color: red;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) !important;
-`;
 
 function Home() {
   const { data: nowPlayingMovies, isLoading } = useQuery({
     queryKey: ["movies", "nowPlaying"],
     queryFn: getMovies,
   });
-  const modalMatch = useMatch("/:movieId");
-  const navigate = useNavigate();
-  const onModalBgClick = () => navigate(-1);
 
   return (
     <>
@@ -89,14 +67,7 @@ function Home() {
               results={nowPlayingMovies?.data.results.slice(1)}
             />
           </CoverWrapper>
-          {/* <AnimatePresence>
-            {modalMatch && (
-              <>
-                <ModalBg animate={{ opacity: 1 }} onClick={onModalBgClick} />
-                <Modal layoutId={modalMatch.params.movieId} />
-              </>
-            )}
-          </AnimatePresence> */}
+          <Modal />
         </>
       )}
     </>

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { makeImagePath } from "../../utils";
 import { motion } from "framer-motion";
 import "./multiple-items.css";
+import { useNavigate } from "react-router-dom";
 
 interface IMovie {
   adult: boolean;
@@ -65,7 +66,6 @@ const Info = styled(motion.div)`
   border-radius: 0 0 5px 0;
   transform: translateY(60px);
 `;
-const InfoTitle = styled.h3``;
 
 const imageVariants = {
   normal: {
@@ -101,14 +101,17 @@ function MultipleItems({
   className?: string;
   results: IMovie[];
 }) {
-  console.log(results);
+  const navigate = useNavigate();
+  const onCardClick = (movieId: number) => {
+    navigate(`/movies/${movieId}`);
+  };
   return (
     <Wrapper className={className}>
       <Heading>{heading}</Heading>
       <div className="slider-container">
         <Slider {...settings}>
           {results.map((movie) => (
-            <CardWrapper key={movie.id}>
+            <CardWrapper key={movie.id} onClick={() => onCardClick(movie.id)}>
               <Card initial="normal" whileHover="hover">
                 <CardImage
                   src={makeImagePath(movie.backdrop_path, "w500")}
