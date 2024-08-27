@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMovies } from "../api";
+import { getAiringTodaySeries, getNowPlayingMovies } from "../api";
 import styled from "styled-components";
-import { makeImagePath } from "../utils";
+import { makeImagePath } from "../utils/makeImagePath";
 import MultipleItems from "../components/MultipleItems/MultipleItems";
 import Modal from "../components/Modal";
 
@@ -16,8 +16,9 @@ const Loader = styled.div`
 `;
 const CoverWrapper = styled.div`
   height: 100vh;
-  overflow-x: hidden;
+  overflow: hidden;
   position: relative;
+  margin-bottom: 45px;
 `;
 const MainCover = styled.div<{ photo: string }>`
   padding: 68px 60px 60px 60px;
@@ -25,7 +26,7 @@ const MainCover = styled.div<{ photo: string }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-image: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 1)),
+  background-image: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(24, 24, 24, 1)),
     url(${(props) => props.photo});
   background-size: cover;
 `;
@@ -41,10 +42,17 @@ const Overview = styled.p`
 `;
 
 function Home() {
-  const { data: nowPlayingMovies, isLoading } = useQuery({
-    queryKey: ["movies", "nowPlaying"],
-    queryFn: getMovies,
-  });
+  const { data: nowPlayingMovies, isLoading: nowPlayingMoviesLoading } =
+    useQuery({
+      queryKey: ["movies", "nowPlaying"],
+      queryFn: getNowPlayingMovies,
+    });
+  const { data: airingTodaySeries, isLoading: airingTodaySeriesLoading } =
+    useQuery({
+      queryKey: ["series", "airingToday"],
+      queryFn: getAiringTodaySeries,
+    });
+  const isLoading = nowPlayingMoviesLoading && airingTodaySeriesLoading;
 
   return (
     <>
@@ -67,7 +75,11 @@ function Home() {
               results={nowPlayingMovies?.data.results.slice(1)}
             />
           </CoverWrapper>
-          <Modal />
+          <MultipleItems
+            heading="현재 상영중인 영화"
+            results={airingTodaySeries?.data.results.slice(1)}
+          />
+          <Modal results={nowPlayingMovies?.data.results} />
         </>
       )}
     </>

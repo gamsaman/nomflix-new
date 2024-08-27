@@ -2,36 +2,22 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import styled from "styled-components";
-import { makeImagePath } from "../../utils";
+import { makeImagePath } from "../../utils/makeImagePath";
 import { motion } from "framer-motion";
 import "./multiple-items.css";
 import { useNavigate } from "react-router-dom";
-
-interface IMovie {
-  adult: boolean;
-  backdrop_path: string;
-  genre_ids: number[];
-  id: number;
-  original_language: string;
-  original_title: string;
-  overview: string;
-  popularity: number;
-  poster_path: string;
-  release_date: string;
-  title: string;
-  video: boolean;
-  vote_average: number;
-  vote_count: number;
-}
+import { IMovie } from "../../api";
 
 const Wrapper = styled.div`
   padding: 0 60px;
   width: 100%;
+  margin-bottom: 45px;
 
   &.first {
     position: absolute;
     bottom: -50px;
     left: 0;
+    margin-bottom: 0;
   }
 `;
 const Heading = styled.h2`
@@ -102,24 +88,24 @@ function MultipleItems({
   results: IMovie[];
 }) {
   const navigate = useNavigate();
-  const onCardClick = (movieId: number) => {
-    navigate(`/movies/${movieId}`);
+  const onCardClick = (videoId: number) => {
+    navigate(`${videoId}`);
   };
   return (
     <Wrapper className={className}>
       <Heading>{heading}</Heading>
       <div className="slider-container">
         <Slider {...settings}>
-          {results.map((movie) => (
-            <CardWrapper key={movie.id} onClick={() => onCardClick(movie.id)}>
+          {results.map((result) => (
+            <CardWrapper key={result.id} onClick={() => onCardClick(result.id)}>
               <Card initial="normal" whileHover="hover">
                 <CardImage
-                  src={makeImagePath(movie.backdrop_path, "w500")}
+                  src={makeImagePath(result.backdrop_path, "w500")}
                   variants={imageVariants}
                   transition={{ type: "tween" }}
                 />
                 <Info variants={infoVarinats} transition={{ type: "tween" }}>
-                  <h3>{movie.title}</h3>
+                  <h3>{result.title}</h3>
                 </Info>
               </Card>
             </CardWrapper>
