@@ -1,9 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAiringTodaySeries, getNowPlayingMovies } from "../api";
+import { getAiringTodaySeries, getNowPlayingMovies, IVideo } from "../api";
 import styled from "styled-components";
 import { makeImagePath } from "../utils/makeImagePath";
-import MultipleItems from "../components/MultipleItems/MultipleItems";
-import Modal from "../components/Modal";
+import MovieSlider from "../components/Sliders/MovieSlider";
+import MovieModal from "../components/Modals/MovieModal";
+import { useState, useEffect } from "react";
+import SeriesSlider from "../components/Sliders/SeriesSlider";
+import SeriesModal from "../components/Modals/SeriesModal";
+import isPropValid from "@emotion/is-prop-valid";
 
 const Loader = styled.div`
   background-color: ${(props) => props.theme.black.darker};
@@ -15,19 +19,19 @@ const Loader = styled.div`
   height: 100vh;
 `;
 const CoverWrapper = styled.div`
-  height: 100vh;
-  overflow: hidden;
   position: relative;
   margin-bottom: 45px;
 `;
-const MainCover = styled.div<{ photo: string }>`
+const MainCover = styled.div.withConfig({
+  shouldForwardProp: (prop) => isPropValid(prop) && prop !== "$photo",
+})<{ $photo: string }>`
+  height: 100vh;
   padding: 68px 60px 60px 60px;
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background-image: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(24, 24, 24, 1)),
-    url(${(props) => props.photo});
+    url(${(props) => props.$photo});
   background-size: cover;
 `;
 const Title = styled.h2`
@@ -39,6 +43,9 @@ const Overview = styled.p`
   line-height: 1.5;
   margin-top: 15px;
   width: 40%;
+`;
+const MultipleItemsWrapper = styled.div`
+  padding-top: 75px;
 `;
 
 function Home() {
@@ -52,7 +59,19 @@ function Home() {
       queryKey: ["series", "airingToday"],
       queryFn: getAiringTodaySeries,
     });
+  const [movieResults, setMovieResults] = useState<IVideo[]>([]);
+  const [seriesResults, setSeriesResults] = useState<IVideo[]>([]);
   const isLoading = nowPlayingMoviesLoading && airingTodaySeriesLoading;
+  useEffect(() => {
+    if (nowPlayingMovies) {
+      const newArray = [...nowPlayingMovies?.data.results];
+      setMovieResults(newArray);
+    }
+    if (airingTodaySeries) {
+      const newArray = [...airingTodaySeries?.data.results];
+      setSeriesResults(newArray);
+    }
+  }, [nowPlayingMovies, airingTodaySeries]);
 
   return (
     <>
@@ -62,24 +81,27 @@ function Home() {
         <>
           <CoverWrapper>
             <MainCover
-              photo={makeImagePath(
+              $photo={makeImagePath(
                 nowPlayingMovies?.data.results[0].backdrop_path || ""
               )}
             >
               <Title>{nowPlayingMovies?.data.results[0].title}</Title>
               <Overview>{nowPlayingMovies?.data.results[0].overview}</Overview>
             </MainCover>
-            <MultipleItems
+            <MovieSlider
               heading="현재 상영중인 영화"
               className="first"
               results={nowPlayingMovies?.data.results.slice(1)}
             />
           </CoverWrapper>
-          <MultipleItems
-            heading="현재 상영중인 영화"
-            results={airingTodaySeries?.data.results.slice(1)}
-          />
-          <Modal results={nowPlayingMovies?.data.results} />
+          <MultipleItemsWrapper>
+            <SeriesSlider
+              heading="현재 방영중인 시리즈"
+              results={airingTodaySeries?.data.results}
+            />
+          </MultipleItemsWrapper>
+          <MovieModal results={movieResults} />
+          <SeriesModal results={seriesResults} />
         </>
       )}
     </>

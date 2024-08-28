@@ -22,7 +22,11 @@ export const router = createBrowserRouter([
         element: <Search />,
       },
       {
-        path: ":videoId",
+        path: "movies/:movieId",
+        element: <Home />,
+      },
+      {
+        path: "series/:seriesId",
         element: <Home />,
       },
     ],

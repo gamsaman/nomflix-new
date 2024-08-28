@@ -89,7 +89,7 @@ const SearchInput = styled(motion.input)`
 
 const navVariants = {
   top: {
-    backgroundColor: "transparent",
+    backgroundColor: "rgba(0, 0, 0, 0)",
     backgroundImage: `linear-gradient(
     180deg,
     rgba(0, 0, 0, 0.7) 10%,
