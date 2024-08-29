@@ -106,7 +106,7 @@ function SeriesSlider({
                   transition={{ type: "tween" }}
                 />
                 <Info variants={infoVarinats} transition={{ type: "tween" }}>
-                  <h3>{type === "movies" ? result.title : result.name}</h3>
+                  <h3>{type === "movie" ? result.title : result.name}</h3>
                 </Info>
               </Card>
             </CardWrapper>
