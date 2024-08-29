@@ -8,31 +8,104 @@ import {
   ModalContent,
   ModalCover,
   ModalInfoWrapper,
+  ModalHeading,
+  ModalOverView,
+  ModalInfoListWrapper,
+  ModalInfoList,
+  ModalInfoListHeading,
+  ModalInfoText,
+  ModalInfoLink,
+  ModalCloseBtn,
 } from "./commonComponent";
+import { calculateTime } from "../../utils/calculateTime";
 
 function MovieModal({ results }: { results: IVideo[] }) {
   const navigate = useNavigate();
   const modalMatch = useMatch("movies/:movieId");
-  const onModalBgClick = () => navigate(-1);
-  const clickedVideo =
-    modalMatch &&
-    results.find((result) => result.id === Number(modalMatch.params.movieId));
-  const { data, isLoading } = useQuery({
+  const onModalClose = () => navigate(-1);
+  const { data: clickedVideo, isLoading } = useQuery({
     queryKey: ["movie", "movieDetail"],
     queryFn: () => getMovieDetails(modalMatch!.params.movieId!),
     enabled: !!modalMatch?.params.movieId,
   });
-
   return (
     <>
-      {modalMatch && (
+      {modalMatch && !isLoading && (
         <>
-          <ModalBg animate={{ opacity: 1 }} onClick={onModalBgClick} />
+          <ModalBg animate={{ opacity: 1 }} onClick={onModalClose} />
           <ModalContent>
             <ModalCover
-              $photo={makeImagePath(clickedVideo?.backdrop_path)}
-            ></ModalCover>
-            <ModalInfoWrapper></ModalInfoWrapper>
+              $photo={makeImagePath(clickedVideo?.data.backdrop_path)}
+            >
+              <ModalHeading>{clickedVideo?.data.title}</ModalHeading>
+              <ModalCloseBtn onClick={onModalClose}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  role="img"
+                  data-icon="XStandard"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M10.5858 12L2.29291 3.70706L3.70712 2.29285L12 10.5857L20.2929 2.29285L21.7071 3.70706L13.4142 12L21.7071 20.2928L20.2929 21.7071L12 13.4142L3.70712 21.7071L2.29291 20.2928L10.5858 12Z"
+                    fill="currentColor"
+                  ></path>
+                </svg>
+              </ModalCloseBtn>
+            </ModalCover>
+            <ModalInfoWrapper>
+              {clickedVideo?.data.overview && (
+                <ModalOverView>{clickedVideo?.data.overview}</ModalOverView>
+              )}
+              <ModalInfoListWrapper>
+                {clickedVideo?.data.runtime && (
+                  <ModalInfoList>
+                    <ModalInfoListHeading>시간:</ModalInfoListHeading>
+                    <ModalInfoText>
+                      {calculateTime(clickedVideo?.data.runtime)}
+                    </ModalInfoText>
+                  </ModalInfoList>
+                )}
+                {clickedVideo?.data.genres && (
+                  <ModalInfoList>
+                    <ModalInfoListHeading>장르:</ModalInfoListHeading>
+                    <ModalInfoText>
+                      {clickedVideo?.data.genres.map(
+                        (genre: { id: number; name: string }, i: number) => {
+                          if (i === clickedVideo?.data.genres.length - 1) {
+                            return genre.name;
+                          }
+
+                          return `${genre.name}, `;
+                        }
+                      )}
+                    </ModalInfoText>
+                  </ModalInfoList>
+                )}
+                {clickedVideo?.data.tagline && (
+                  <ModalInfoList>
+                    <ModalInfoListHeading>태그:</ModalInfoListHeading>
+                    <ModalInfoText>{clickedVideo?.data.tagline}</ModalInfoText>
+                  </ModalInfoList>
+                )}
+                {clickedVideo?.data.homepage && (
+                  <ModalInfoList>
+                    <ModalInfoListHeading>홈페이지:</ModalInfoListHeading>
+                    <ModalInfoLink
+                      href={clickedVideo?.data.homepage}
+                      target="_blank"
+                    >
+                      링크 바로가기
+                    </ModalInfoLink>
+                  </ModalInfoList>
+                )}
+              </ModalInfoListWrapper>
+            </ModalInfoWrapper>
           </ModalContent>
         </>
       )}
