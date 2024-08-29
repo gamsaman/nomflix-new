@@ -1,5 +1,4 @@
 import { useMatch, useNavigate } from "react-router-dom";
-import { IVideo } from "../../api";
 import { makeImagePath } from "../../utils/makeImagePath";
 import { useQuery } from "@tanstack/react-query";
 import { getMovieDetails } from "../../api";
@@ -18,8 +17,9 @@ import {
   ModalCloseBtn,
 } from "./commonComponent";
 import { calculateTime } from "../../utils/calculateTime";
+import { useRef, useEffect } from "react";
 
-function MovieModal({ results }: { results: IVideo[] }) {
+function MovieModal() {
   const navigate = useNavigate();
   const modalMatch = useMatch("movies/:movieId");
   const onModalClose = () => navigate(-1);
@@ -28,12 +28,19 @@ function MovieModal({ results }: { results: IVideo[] }) {
     queryFn: () => getMovieDetails(modalMatch!.params.movieId!),
     enabled: !!modalMatch?.params.movieId,
   });
+  const modalRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (modalMatch && modalRef.current && modalRef.current.clientHeight > 800) {
+      modalRef.current.classList.add("has-scroll");
+    }
+  }, [modalMatch]);
+
   return (
     <>
       {modalMatch && !isLoading && (
         <>
           <ModalBg animate={{ opacity: 1 }} onClick={onModalClose} />
-          <ModalContent>
+          <ModalContent ref={modalRef}>
             <ModalCover
               $photo={makeImagePath(clickedVideo?.data.backdrop_path)}
             >
@@ -50,8 +57,6 @@ function MovieModal({ results }: { results: IVideo[] }) {
                   aria-hidden="true"
                 >
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
                     d="M10.5858 12L2.29291 3.70706L3.70712 2.29285L12 10.5857L20.2929 2.29285L21.7071 3.70706L13.4142 12L21.7071 20.2928L20.2929 21.7071L12 13.4142L3.70712 21.7071L2.29291 20.2928L10.5858 12Z"
                     fill="currentColor"
                   ></path>

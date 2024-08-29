@@ -23,6 +23,20 @@ export const ModalContent = styled(motion.div)`
   border-radius: 10px;
   background-color: ${(props) => props.theme.black.darker};
   z-index: 100;
+
+  &.has-scroll {
+    overflow-y: scroll;
+    height: 800px;
+  }
+
+  /* Scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: ${(props) => props.theme.black.lighter};
+    border-radius: 10px;
+  }
 `;
 export const ModalCover = styled.div.withConfig({
   shouldForwardProp: (prop) => isPropValid(prop) && prop !== "$photo",

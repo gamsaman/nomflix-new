@@ -1,5 +1,5 @@
 import { useMatch, useNavigate } from "react-router-dom";
-import { getSeriesDetails, IVideo } from "../../api";
+import { getSeriesDetails } from "../../api";
 import { makeImagePath } from "../../utils/makeImagePath";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -16,8 +16,9 @@ import {
   ModalInfoLink,
   ModalCloseBtn,
 } from "./commonComponent";
+import { useRef, useEffect } from "react";
 
-function SeriesModal({ results }: { results: IVideo[] }) {
+function SeriesModal() {
   const navigate = useNavigate();
   const modalMatch = useMatch("series/:seriesId");
   const onModalClose = () => navigate(-1);
@@ -26,14 +27,30 @@ function SeriesModal({ results }: { results: IVideo[] }) {
     queryFn: () => getSeriesDetails(modalMatch!.params.seriesId!),
     enabled: !!modalMatch?.params.seriesId,
   });
+  const modalRef = useRef<HTMLDivElement>(null);
 
-  console.log(clickedVideo?.data);
+  useEffect(() => {
+    if (modalMatch && modalRef.current) {
+      const modalHeight = modalRef.current.clientHeight;
+      if (modalHeight > 800) {
+        modalRef.current.classList.add("has-scroll");
+      }
+    }
+
+    return () => {
+      if (modalRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        modalRef.current.classList.remove("has-scroll");
+      }
+    };
+  }, [modalMatch, clickedVideo]);
+
   return (
     <>
       {modalMatch && !isLoading && (
         <>
           <ModalBg animate={{ opacity: 1 }} onClick={onModalClose} />
-          <ModalContent>
+          <ModalContent ref={modalRef}>
             <ModalCover
               $photo={makeImagePath(clickedVideo?.data.backdrop_path)}
             >
@@ -50,8 +67,6 @@ function SeriesModal({ results }: { results: IVideo[] }) {
                   aria-hidden="true"
                 >
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
                     d="M10.5858 12L2.29291 3.70706L3.70712 2.29285L12 10.5857L20.2929 2.29285L21.7071 3.70706L13.4142 12L21.7071 20.2928L20.2929 21.7071L12 13.4142L3.70712 21.7071L2.29291 20.2928L10.5858 12Z"
                     fill="currentColor"
                   ></path>

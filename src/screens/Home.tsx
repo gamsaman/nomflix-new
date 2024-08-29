@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAiringTodaySeries, getNowPlayingMovies, IVideo } from "../api";
+import { getAiringTodaySeries, getNowPlayingMovies } from "../api";
 import styled from "styled-components";
 import { makeImagePath } from "../utils/makeImagePath";
 import MovieSlider from "../components/Sliders/MovieSlider";
 import MovieModal from "../components/Modals/MovieModal";
-import { useState, useEffect } from "react";
 import SeriesSlider from "../components/Sliders/SeriesSlider";
 import SeriesModal from "../components/Modals/SeriesModal";
 import isPropValid from "@emotion/is-prop-valid";
@@ -59,19 +58,7 @@ function Home() {
       queryKey: ["series", "airingToday"],
       queryFn: getAiringTodaySeries,
     });
-  const [movieResults, setMovieResults] = useState<IVideo[]>([]);
-  const [seriesResults, setSeriesResults] = useState<IVideo[]>([]);
   const isLoading = nowPlayingMoviesLoading && airingTodaySeriesLoading;
-  useEffect(() => {
-    if (nowPlayingMovies) {
-      const newArray = [...nowPlayingMovies?.data.results];
-      setMovieResults(newArray);
-    }
-    if (airingTodaySeries) {
-      const newArray = [...airingTodaySeries?.data.results];
-      setSeriesResults(newArray);
-    }
-  }, [nowPlayingMovies, airingTodaySeries]);
 
   return (
     <>
@@ -100,8 +87,8 @@ function Home() {
               results={airingTodaySeries?.data.results}
             />
           </MultipleItemsWrapper>
-          <MovieModal results={movieResults} />
-          <SeriesModal results={seriesResults} />
+          <MovieModal />
+          <SeriesModal />
         </>
       )}
     </>
