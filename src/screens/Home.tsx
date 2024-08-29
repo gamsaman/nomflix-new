@@ -2,11 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getAiringTodaySeries, getNowPlayingMovies } from "../api";
 import styled from "styled-components";
 import { makeImagePath } from "../utils/makeImagePath";
-import MovieSlider from "../components/Sliders/MovieSlider";
-import MovieModal from "../components/Modals/MovieModal";
-import SeriesSlider from "../components/Sliders/SeriesSlider";
-import SeriesModal from "../components/Modals/SeriesModal";
 import isPropValid from "@emotion/is-prop-valid";
+import Slider from "../components/Slider/Slider";
+import Modal from "../components/Modal";
 
 const Loader = styled.div`
   background-color: ${(props) => props.theme.black.darker};
@@ -75,20 +73,22 @@ function Home() {
               <Title>{nowPlayingMovies?.data.results[0].title}</Title>
               <Overview>{nowPlayingMovies?.data.results[0].overview}</Overview>
             </MainCover>
-            <MovieSlider
+            <Slider
               heading="현재 상영중인 영화"
               className="first"
               results={nowPlayingMovies?.data.results.slice(1)}
+              type="movie"
             />
           </CoverWrapper>
           <MultipleItemsWrapper>
-            <SeriesSlider
+            <Slider
               heading="현재 방영중인 시리즈"
               results={airingTodaySeries?.data.results}
+              type="series"
             />
           </MultipleItemsWrapper>
-          <MovieModal />
-          <SeriesModal />
+          <Modal type="movie" />
+          <Modal type="series" />
         </>
       )}
     </>
