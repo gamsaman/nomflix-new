@@ -24,8 +24,20 @@ export interface IVideo {
 export const getNowPlayingMovies = async () => {
   return await axios.get(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`);
 };
+export const getTopRatedMovies = async () => {
+  return await axios.get(`${BASE_PATH}/movie/top_rated?api_key=${API_KEY}`);
+};
+export const getUpcomingMovies = async () => {
+  return await axios.get(`${BASE_PATH}/movie/upcoming?api_key=${API_KEY}`);
+};
 export const getAiringTodaySeries = async () => {
   return await axios.get(`${BASE_PATH}/tv/airing_today?api_key=${API_KEY}`);
+};
+export const getPopularSeries = async () => {
+  return await axios.get(`${BASE_PATH}/tv/popular?api_key=${API_KEY}`);
+};
+export const getTopRatedSeries = async () => {
+  return await axios.get(`${BASE_PATH}/tv/top_rated?api_key=${API_KEY}`);
 };
 export const getMovieDetails = async (movieId: string) => {
   return await axios.get(`${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}`);

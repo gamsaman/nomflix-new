@@ -2,7 +2,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { makeImagePath } from "../../utils/makeImagePath";
-import "./multiple-items.css";
+import "./slider.css";
 import { useNavigate } from "react-router-dom";
 import { IVideo } from "../../api";
 import styled from "styled-components";

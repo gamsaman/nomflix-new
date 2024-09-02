@@ -182,22 +182,23 @@ function Modal({ type }: { type: string }) {
                     </ModalInfoText>
                   </ModalInfoList>
                 )}
-                {clickedVideo?.data.genres && (
-                  <ModalInfoList>
-                    <ModalInfoListHeading>장르:</ModalInfoListHeading>
-                    <ModalInfoText>
-                      {clickedVideo?.data.genres.map(
-                        (genre: { id: number; name: string }, i: number) => {
-                          if (i === clickedVideo?.data.genres.length - 1) {
-                            return genre.name;
-                          }
+                {clickedVideo?.data.genres &&
+                  clickedVideo?.data.genres.length > 0 && (
+                    <ModalInfoList>
+                      <ModalInfoListHeading>장르:</ModalInfoListHeading>
+                      <ModalInfoText>
+                        {clickedVideo?.data.genres.map(
+                          (genre: { id: number; name: string }, i: number) => {
+                            if (i === clickedVideo?.data.genres.length - 1) {
+                              return genre.name;
+                            }
 
-                          return `${genre.name}, `;
-                        }
-                      )}
-                    </ModalInfoText>
-                  </ModalInfoList>
-                )}
+                            return `${genre.name}, `;
+                          }
+                        )}
+                      </ModalInfoText>
+                    </ModalInfoList>
+                  )}
                 {clickedVideo?.data.tagline && (
                   <ModalInfoList>
                     <ModalInfoListHeading>태그:</ModalInfoListHeading>
