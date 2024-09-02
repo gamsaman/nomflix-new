@@ -45,3 +45,8 @@ export const getMovieDetails = async (movieId: string) => {
 export const getSeriesDetails = async (seriesId: string) => {
   return await axios.get(`${BASE_PATH}/tv/${seriesId}?api_key=${API_KEY}`);
 };
+export const getSearchMulti = async (videoName: string | null) => {
+  return await axios.get(
+    `${BASE_PATH}/search/multi?api_key=${API_KEY}&query=${videoName}`
+  );
+};
