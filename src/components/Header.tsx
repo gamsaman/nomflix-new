@@ -104,7 +104,6 @@ const navVariants = {
 
 function Header() {
   const homeMatch = useMatch("");
-  const seriesMatch = useMatch("series");
   const navAnimation = useAnimation();
   const { scrollY } = useScroll();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -137,15 +136,6 @@ function Header() {
               </ListLink>
             ) : (
               <ListLink to="/">홈</ListLink>
-            )}
-          </List>
-          <List>
-            {seriesMatch ? (
-              <ListLink to="/series" className="active">
-                시리즈
-              </ListLink>
-            ) : (
-              <ListLink to="/series">시리즈</ListLink>
             )}
           </List>
         </Links>
