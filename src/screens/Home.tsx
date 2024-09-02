@@ -59,6 +59,11 @@ const InfoBtn = styled.button`
   border-radius: 4px;
   gap: 10px;
   margin-top: 22px;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: rgba(109, 109, 110, 0.85);
+  }
 
   span {
     font-size: 18px;
