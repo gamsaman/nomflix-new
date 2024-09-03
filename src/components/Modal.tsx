@@ -251,7 +251,7 @@ function Modal({ type }: { type: string }) {
                 {provider?.data.results.KR && (
                   <>
                     <ModalInfoListHeading>시청 가능한 OTT</ModalInfoListHeading>
-                    {provider?.data.results.KR.flatrate ? (
+                    {type === "series" ? (
                       <>
                         {provider?.data.results.KR.flatrate.map(
                           (rentLink: IRent) => (
