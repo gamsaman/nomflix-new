@@ -29,19 +29,20 @@ const CardWrapper = styled(motion.div)`
   padding: 0 5px;
   cursor: pointer;
 `;
-const Card = styled(motion.div)`
+export const Card = styled(motion.div)<{ id?: number }>`
   aspect-ratio: 300 / 170;
   overflow: hidden;
   position: relative;
   border-radius: 5px;
+  cursor: pointer;
 `;
-const CardImage = styled(motion.img)`
+export const CardImage = styled(motion.img)`
   width: 100%;
   height: 100%;
   display: block;
   border-radius: 5px;
 `;
-const Info = styled(motion.div)`
+export const Info = styled(motion.div)`
   position: absolute;
   bottom: 0;
   left: 0;
@@ -53,7 +54,7 @@ const Info = styled(motion.div)`
   transform: translateY(60px);
 `;
 
-const infoVarinats = {
+export const infoVarinats = {
   normal: {
     y: 60,
   },
@@ -61,7 +62,7 @@ const infoVarinats = {
     y: 0,
   },
 };
-const imageVariants = {
+export const imageVariants = {
   normal: {
     scale: 1,
   },
