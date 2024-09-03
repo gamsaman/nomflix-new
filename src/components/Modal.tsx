@@ -1,12 +1,24 @@
 import { useMatch, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { makeImagePath } from "../utils/makeImagePath";
-import { getMovieDetails, getSeriesDetails } from "../api";
+import {
+  getMovieDetails,
+  getMovieProviders,
+  getSeriesDetails,
+  getSeriesProviders,
+} from "../api";
 import { calculateTime } from "../utils/calculateTime";
 import { useRef, useEffect } from "react";
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import isPropValid from "@emotion/is-prop-valid";
+
+interface IRent {
+  display_priority: number;
+  logo_path: string;
+  provider_id: number;
+  provider_name: string;
+}
 
 const ModalBg = styled(motion.div)`
   position: fixed;
@@ -99,13 +111,20 @@ const ModalCloseBtn = styled.button`
   justify-content: center;
   align-items: center;
 `;
+const ProviderImg = styled.img`
+  width: 45px;
+  height: 45px;
+  border-radius: 5px;
+  margin-top: 10px;
+  margin-right: 10px;
+`;
 
 function Modal({ type }: { type: string }) {
   const navigate = useNavigate();
   const modalMatch = useMatch(`${type}/:${type}Id`);
   const onModalClose = () => navigate(-1);
 
-  const { data: clickedVideo, isLoading } = useQuery({
+  const { data: clickedVideo, isLoading: modalLoading } = useQuery({
     queryKey: [type, `${type}Detail`],
     queryFn: () => {
       if (type === "movie") {
@@ -116,8 +135,19 @@ function Modal({ type }: { type: string }) {
     },
     enabled: !!modalMatch?.params[`${type}Id`],
   });
-
+  const { data: provider, isLoading: providerLoading } = useQuery({
+    queryKey: [type, `${type}Provider`],
+    queryFn: () => {
+      if (type === "movie") {
+        return getMovieProviders(modalMatch!.params.movieId!);
+      } else {
+        return getSeriesProviders(modalMatch!.params.seriesId!);
+      }
+    },
+  });
   const modalRef = useRef<HTMLDivElement>(null);
+
+  console.log(provider);
 
   useEffect(() => {
     if (modalRef.current) {
@@ -136,6 +166,8 @@ function Modal({ type }: { type: string }) {
       }
     };
   }, [modalMatch, clickedVideo]);
+
+  const isLoading = modalLoading && providerLoading;
 
   return (
     <>
@@ -215,6 +247,36 @@ function Modal({ type }: { type: string }) {
                       링크 바로가기
                     </ModalInfoLink>
                   </ModalInfoList>
+                )}
+                {provider?.data.results.KR && (
+                  <>
+                    <ModalInfoListHeading>시청 가능한 OTT</ModalInfoListHeading>
+                    {provider?.data.results.KR.flatrate ? (
+                      <>
+                        {provider?.data.results.KR.flatrate.map(
+                          (rentLink: IRent) => (
+                            <ProviderImg
+                              alt={rentLink.provider_name}
+                              id={rentLink.provider_id + ""}
+                              src={makeImagePath(rentLink.logo_path)}
+                            ></ProviderImg>
+                          )
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {provider?.data.results.KR.rent.map(
+                          (rentLink: IRent) => (
+                            <ProviderImg
+                              alt={rentLink.provider_name}
+                              id={rentLink.provider_id + ""}
+                              src={makeImagePath(rentLink.logo_path)}
+                            ></ProviderImg>
+                          )
+                        )}
+                      </>
+                    )}
+                  </>
                 )}
               </ModalInfoListWrapper>
             </ModalInfoWrapper>

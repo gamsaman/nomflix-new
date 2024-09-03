@@ -50,3 +50,13 @@ export const getSearchMulti = async (videoName: string | null) => {
     `${BASE_PATH}/search/multi?api_key=${API_KEY}&query=${videoName}`
   );
 };
+export const getMovieProviders = async (movieId: string) => {
+  return await axios.get(
+    `${BASE_PATH}/movie/${movieId}/watch/providers?api_key=${API_KEY}`
+  );
+};
+export const getSeriesProviders = async (seriesId: string) => {
+  return await axios.get(
+    `${BASE_PATH}/tv/${seriesId}/watch/providers?api_key=${API_KEY}`
+  );
+};
