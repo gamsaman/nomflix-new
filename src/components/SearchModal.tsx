@@ -1,4 +1,4 @@
-import { useMatch, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { makeImagePath } from "../utils/makeImagePath";
 import {
@@ -123,35 +123,29 @@ const ProviderImg = styled.img`
   margin-right: 10px;
 `;
 
-function Modal({ type }: { type: string }) {
+function SearchModal({ type, videoId }: { type: string; videoId: string }) {
   const navigate = useNavigate();
-  const homeMatch = useMatch(`${type}/:${type}Id`);
-  const searchMatch = useMatch(`/search/${type}/:${type}Id`);
-  const modalMatch = homeMatch || searchMatch;
-
   const onModalClose = () => navigate(-1);
 
   const { data: clickedVideo, isLoading: modalLoading } = useQuery({
     queryKey: [type, `${type}Detail`],
     queryFn: () => {
       if (type === "movie") {
-        return getMovieDetails(modalMatch!.params.movieId!);
+        return getMovieDetails(videoId);
       } else {
-        return getSeriesDetails(modalMatch!.params.seriesId!);
+        return getSeriesDetails(videoId);
       }
     },
-    enabled: !!modalMatch?.params[`${type}Id`],
   });
   const { data: provider, isLoading: providerLoading } = useQuery({
     queryKey: [type, `${type}Provider`],
     queryFn: () => {
       if (type === "movie") {
-        return getMovieProviders(modalMatch!.params.movieId!);
+        return getMovieProviders(videoId);
       } else {
-        return getSeriesProviders(modalMatch!.params.seriesId!);
+        return getSeriesProviders(videoId);
       }
     },
-    enabled: !!modalMatch?.params[`${type}Id`],
   });
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -171,13 +165,13 @@ function Modal({ type }: { type: string }) {
         modalRef.current.classList.remove("has-scroll");
       }
     };
-  }, [modalMatch, clickedVideo]);
+  }, [videoId, clickedVideo]);
 
   const isLoading = modalLoading && providerLoading;
 
   return (
     <>
-      {modalMatch && !isLoading && (
+      {!isLoading && (
         <>
           <ModalBg animate={{ opacity: 1 }} onClick={onModalClose} />
           <ModalContent ref={modalRef}>
@@ -320,4 +314,4 @@ function Modal({ type }: { type: string }) {
   );
 }
 
-export default Modal;
+export default SearchModal;

@@ -10,6 +10,9 @@ import {
   infoVarinats,
 } from "../components/Slider/Slider";
 import { makeImagePath } from "../utils/makeImagePath";
+import Modal from "../components/Modal";
+import { useNavigate } from "react-router-dom";
+import SearchModal from "../components/SearchModal";
 
 interface ISearchResult {
   adult: boolean; // Defaults to true
@@ -30,33 +33,73 @@ interface ISearchResult {
   vote_count: number; // Defaults to 0
 }
 
-const Wrapper = styled.div`
+const CardListsWrapper = styled.div`
+  padding: 108px 60px 0 60px;
+`;
+const CardLists = styled.div`
   display: grid;
-  margin-top: 68px;
   grid-template-columns: repeat(6, 1fr);
   gap: 5px;
-  padding: 60px;
+  margin-bottom: 60px;
+`;
+const ListsHeading = styled.h2`
+  font-size: 24px;
+  color: ${(props) => props.theme.white.darker};
+  margin-bottom: 15px;
+`;
+const NoResult = styled.div`
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 function Search() {
   const location = useLocation();
-  const keyword = new URLSearchParams(location.search).get("keyword");
+  const searchParams = new URLSearchParams(location.search);
+  const keyword = searchParams.get("keyword");
+  const movieId = searchParams.get("movieId");
+  const seriesId = searchParams.get("seriesId");
   const { data: SearchData, isLoading } = useQuery({
     queryKey: ["search", keyword],
     queryFn: () => getSearchMulti(keyword),
+    enabled: !!keyword,
   });
+  const navigate = useNavigate();
+  const onCardClick = (videoId: number, type: string) => {
+    if (type === "movie") {
+      navigate(`?keyword=${keyword}&movieId=${videoId}`);
+    }
+    if (type === "tv") {
+      navigate(`?keyword=${keyword}&seriesId=${videoId}`);
+    }
+  };
+
+  console.log(SearchData);
 
   return (
     <>
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        <Wrapper>
-          {SearchData?.data.results.map((result: ISearchResult) => {
-            return (
-              <>
-                {result.media_type !== "person" && (
-                  <Card id={result.id} initial="normal" whileHover="hover">
+        <>
+          <CardListsWrapper>
+            <ListsHeading>검색된 영화</ListsHeading>
+            {SearchData?.data.results.filter(
+              (result: ISearchResult) => result.media_type === "movie"
+            ).length === 0 && <NoResult>"검색 결과가 없습니다"</NoResult>}
+            <CardLists>
+              {SearchData?.data.results
+                .filter(
+                  (result: ISearchResult) => result.media_type === "movie"
+                )
+                .map((result: ISearchResult) => (
+                  <Card
+                    initial="normal"
+                    whileHover="hover"
+                    key={result.id}
+                    onClick={() => onCardClick(result.id, result.media_type)}
+                  >
                     <CardImage
                       src={makeImagePath(result.backdrop_path, "w500")}
                       variants={imageVariants}
@@ -66,14 +109,43 @@ function Search() {
                       variants={infoVarinats}
                       transition={{ type: "tween" }}
                     >
-                      <h3>{result.title ? result.title : result.name}</h3>
+                      <h3>{result.title}</h3>
                     </Info>
                   </Card>
-                )}
-              </>
-            );
-          })}
-        </Wrapper>
+                ))}
+            </CardLists>
+            <ListsHeading>검색된 시리즈</ListsHeading>
+            {SearchData?.data.results.filter(
+              (result: ISearchResult) => result.media_type === "tv"
+            ).length === 0 && <NoResult>"검색 결과가 없습니다"</NoResult>}
+            <CardLists>
+              {SearchData?.data.results
+                .filter((result: ISearchResult) => result.media_type === "tv")
+                .map((result: ISearchResult) => (
+                  <Card
+                    initial="normal"
+                    whileHover="hover"
+                    key={result.id}
+                    onClick={() => onCardClick(result.id, result.media_type)}
+                  >
+                    <CardImage
+                      src={makeImagePath(result.backdrop_path, "w500")}
+                      variants={imageVariants}
+                      transition={{ type: "tween" }}
+                    />
+                    <Info
+                      variants={infoVarinats}
+                      transition={{ type: "tween" }}
+                    >
+                      <h3>{result.name}</h3>
+                    </Info>
+                  </Card>
+                ))}
+            </CardLists>
+          </CardListsWrapper>
+          {movieId && <SearchModal type="movie" videoId={movieId} />}
+          {seriesId && <SearchModal type="series" videoId={seriesId} />}
+        </>
       )}
     </>
   );
