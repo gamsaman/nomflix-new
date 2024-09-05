@@ -6,7 +6,7 @@ import {
   useScroll,
 } from "framer-motion";
 import { NavLink, useMatch, useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 const Nav = styled(motion.nav)`
@@ -82,6 +82,11 @@ const SearchInput = styled(motion.input)`
   left: -270px;
   color: ${(props) => props.theme.white.lighter};
   z-index: -1;
+
+  &:-internal-autofill-selected {
+    color: ${(props) => props.theme.white.lighter} !important;
+    background: rgba(0, 0, 0, 0.75) !important;
+  }
 
   &::placeholder {
     color: ${(props) => props.theme.gray};
