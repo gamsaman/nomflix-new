@@ -1,151 +1,60 @@
-import { useNavigate } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { makeImagePath } from "../utils/makeImagePath";
+import { makeImagePath } from "../../utils/makeImagePath";
 import {
   getMovieDetails,
   getMovieProviders,
   getSeriesDetails,
   getSeriesProviders,
-} from "../api";
-import { calculateTime } from "../utils/calculateTime";
+} from "../../api";
+import { calculateTime } from "../../utils/calculateTime";
 import { useRef, useEffect } from "react";
-import styled from "styled-components";
-import { motion } from "framer-motion";
-import isPropValid from "@emotion/is-prop-valid";
+import {
+  ModalBg,
+  ModalContent,
+  ModalCover,
+  ModalHeading,
+  ModalInfoWrapper,
+  ModalOverView,
+  ModalInfoListWrapper,
+  ModalInfoList,
+  ModalInfoListHeading,
+  ModalInfoText,
+  ModalInfoLink,
+  ModalCloseBtn,
+  ProviderImg,
+  IRent,
+} from "./commonComponents";
 
-interface IRent {
-  display_priority: number;
-  logo_path: string;
-  provider_id: number;
-  provider_name: string;
-}
-
-const ModalBg = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  z-index: 100;
-`;
-const ModalContent = styled(motion.div)`
-  width: 50vw;
-  min-height: 60vh;
-  background-color: red;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) !important;
-  border-radius: 10px;
-  background-color: ${(props) => props.theme.black.darker};
-  z-index: 100;
-
-  &.has-scroll {
-    overflow-y: scroll;
-    height: 800px;
-  }
-
-  /* Scrollbar styling */
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: ${(props) => props.theme.black.lighter};
-    border-radius: 10px;
-  }
-`;
-const ModalCover = styled.div.withConfig({
-  shouldForwardProp: (prop) => isPropValid(prop) && prop !== "$photo",
-})<{ $photo: string }>`
-  aspect-ratio: 16 / 9;
-  background-image: linear-gradient(rgba(0, 0, 0, 0) 80%, rgba(24, 24, 24, 1)),
-    url(${(props) => props.$photo});
-  background-size: cover;
-  border-radius: 10px 10px 0 0;
-  position: relative;
-  padding: 40px;
-`;
-const ModalHeading = styled.h3`
-  font-size: 36px;
-  position: absolute;
-  bottom: 40px;
-`;
-const ModalInfoWrapper = styled.div`
-  padding: 20px 40px;
-  display: flex;
-  justify-content: space-between;
-`;
-const ModalOverView = styled.p`
-  width: 50%;
-  line-height: 1.5;
-`;
-const ModalInfoListWrapper = styled.div`
-  width: 45%;
-`;
-const ModalInfoList = styled.div`
-  display: flex;
-  gap: 5px;
-  margin-bottom: 15px;
-
-  &.no-flex {
-    display: block;
-  }
-`;
-const ModalInfoListHeading = styled.h4`
-  color: ${(props) => props.theme.white.darker02};
-  font-size: 14px;
-`;
-const ModalInfoText = styled.p`
-  font-size: 14px;
-`;
-const ModalInfoLink = styled.a`
-  font-size: 14px;
-`;
-const ModalCloseBtn = styled.button`
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background-color: ${(props) => props.theme.black.darker};
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const ProviderImg = styled.img`
-  width: 45px;
-  height: 45px;
-  border-radius: 5px;
-  margin-top: 10px;
-  margin-right: 10px;
-`;
-
-function SearchModal({ type, videoId }: { type: string; videoId: string }) {
+function Modal({ type }: { type: string }) {
   const navigate = useNavigate();
+  const homeMatch = useMatch(`${type}/:${type}Id`);
+  const searchMatch = useMatch(`/search/${type}/:${type}Id`);
+  const modalMatch = homeMatch || searchMatch;
+
   const onModalClose = () => navigate(-1);
 
   const { data: clickedVideo, isLoading: modalLoading } = useQuery({
     queryKey: [type, `${type}Detail`],
     queryFn: () => {
       if (type === "movie") {
-        return getMovieDetails(videoId);
+        return getMovieDetails(modalMatch!.params.movieId!);
       } else {
-        return getSeriesDetails(videoId);
+        return getSeriesDetails(modalMatch!.params.seriesId!);
       }
     },
+    enabled: !!modalMatch?.params[`${type}Id`],
   });
   const { data: provider, isLoading: providerLoading } = useQuery({
     queryKey: [type, `${type}Provider`],
     queryFn: () => {
       if (type === "movie") {
-        return getMovieProviders(videoId);
+        return getMovieProviders(modalMatch!.params.movieId!);
       } else {
-        return getSeriesProviders(videoId);
+        return getSeriesProviders(modalMatch!.params.seriesId!);
       }
     },
+    enabled: !!modalMatch?.params[`${type}Id`],
   });
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -165,13 +74,13 @@ function SearchModal({ type, videoId }: { type: string; videoId: string }) {
         modalRef.current.classList.remove("has-scroll");
       }
     };
-  }, [videoId, clickedVideo]);
+  }, [modalMatch, clickedVideo]);
 
   const isLoading = modalLoading && providerLoading;
 
   return (
     <>
-      {!isLoading && (
+      {modalMatch && !isLoading && (
         <>
           <ModalBg animate={{ opacity: 1 }} onClick={onModalClose} />
           <ModalContent ref={modalRef}>
@@ -314,4 +223,4 @@ function SearchModal({ type, videoId }: { type: string; videoId: string }) {
   );
 }
 
-export default SearchModal;
+export default Modal;

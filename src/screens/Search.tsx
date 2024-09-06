@@ -10,9 +10,8 @@ import {
   infoVarinats,
 } from "../components/Slider/Slider";
 import { makeImagePath } from "../utils/makeImagePath";
-import Modal from "../components/Modal";
 import { useNavigate } from "react-router-dom";
-import SearchModal from "../components/SearchModal";
+import SearchModal from "../components/Modals/SearchModal";
 
 interface ISearchResult {
   adult: boolean; // Defaults to true
@@ -74,8 +73,6 @@ function Search() {
       navigate(`?keyword=${keyword}&seriesId=${videoId}`);
     }
   };
-
-  console.log(SearchData);
 
   return (
     <>

@@ -11,7 +11,7 @@ import styled from "styled-components";
 import { makeImagePath } from "../utils/makeImagePath";
 import isPropValid from "@emotion/is-prop-valid";
 import Slider from "../components/Slider/Slider";
-import Modal from "../components/Modal";
+import Modal from "../components/Modals/Modal";
 import { useNavigate } from "react-router-dom";
 
 const Loader = styled.div`

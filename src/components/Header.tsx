@@ -6,7 +6,7 @@ import {
   useScroll,
 } from "framer-motion";
 import { NavLink, useMatch, useNavigate, Link } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const Nav = styled(motion.nav)`
@@ -92,7 +92,6 @@ const SearchInput = styled(motion.input)`
     color: ${(props) => props.theme.gray};
   }
 `;
-
 const navVariants = {
   top: {
     backgroundColor: "rgba(0, 0, 0, 0)",
@@ -107,7 +106,6 @@ const navVariants = {
     backgroundImage: "none",
   },
 };
-
 interface IForm {
   keyword: string;
 }
